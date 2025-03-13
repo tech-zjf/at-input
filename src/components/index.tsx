@@ -92,6 +92,7 @@ const AtInput: React.FC<AtInputProps> = ({
   height = 300,
   onRequest,
   onChange,
+  atColor = "#1964FF",
 }) => {
   // 存储输入框的内容
   const [content, setContent] = useState<string>("");
@@ -247,15 +248,15 @@ const AtInput: React.FC<AtInputProps> = ({
    * @param {string} [color='blue'] - span 元素的颜色
    * @returns {HTMLSpanElement} - 创建的 span 元素
    */
-  const createAtSpan = (id: number | string, name: string, color = "blue") => {
+  const createAtSpan = (uid: number | string, name: string) => {
     // 创建一个 span 元素
     const spanElement = document.createElement("span");
     // 添加类名
     spanElement.className = "at-span";
     // 设置颜色
-    spanElement.style.color = color;
+    spanElement.style.color = atColor;
     // 设置 ID
-    spanElement.id = id.toString();
+    spanElement.id = uid.toString();
     // 设置不可编辑
     spanElement.contentEditable = "false";
     // 设置文本内容
