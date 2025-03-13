@@ -4,9 +4,6 @@ import "./index.less";
 import { StringTools } from "../tools/index";
 import { AtInputProps, CursorPosition, UserOption } from "./interface";
 
-// 用于防抖的定时器
-let debounceTimer: ReturnType<typeof setTimeout> | null = null;
-
 /**
  * AtInput 组件，支持 @ 功能的输入框
  * @param {AtInputProps} props - 组件属性
@@ -20,6 +17,13 @@ const AtInput: React.FC<AtInputProps> = ({
   onRequest,
   onChange,
   atColor = "#1964FF",
+  triggerChar = "@",
+  debounceDelay = 300,
+  customSelectComponent: CustomSelectComponent,
+  customSelectStyle,
+  renderOption,
+  className,
+  style,
 }) => {
   // 存储输入框的内容
   const [content, setContent] = useState<string>("");
@@ -34,6 +38,7 @@ const AtInput: React.FC<AtInputProps> = ({
   // 存储当前搜索的关键字
   const [searchKeyword, setSearchKeyword] = useState<string>("");
   // 存储光标的位置
+  const [selectedIndex, setSelectedIndex] = useState<number>(-1);
   const [cursorPosition, setCursorPosition] = useState<CursorPosition>({
     x: 0,
     y: 0,
@@ -42,6 +47,9 @@ const AtInput: React.FC<AtInputProps> = ({
   const [selectedUsers, setSelectedUsers] = useState<UserOption[]>([]);
   // 引用输入框的 DOM 元素
   const editorRef = useRef<HTMLDivElement>(null);
+
+  // 用于防抖的定时器
+  const debounceTimer = useRef<number | null>(null);
 
   /**
    * 更新光标的位置
@@ -68,17 +76,17 @@ const AtInput: React.FC<AtInputProps> = ({
   const fetchUserOptions = useCallback(
     (keyword?: string) => {
       // 如果定时器存在，清除定时器
-      if (debounceTimer) {
-        clearTimeout(debounceTimer);
-        debounceTimer = null;
+      if (debounceTimer.current) {
+        clearTimeout(debounceTimer.current);
+        debounceTimer.current = null;
       }
-      // 设置新的定时器，延迟 500ms 后请求用户选项
-      debounceTimer = setTimeout(async () => {
+      // 设置新的定时器，延迟 debounceDelay 毫秒 后请求用户选项
+      debounceTimer.current = setTimeout(async () => {
         const options = await onRequest(keyword);
         setUserOptions(options);
-      }, 500);
+      }, debounceDelay);
     },
-    [onRequest]
+    [onRequest, debounceDelay]
   );
 
   /**
@@ -101,7 +109,7 @@ const AtInput: React.FC<AtInputProps> = ({
     // 更新焦点节点状态
     setFocusNode(selection.focusNode);
     // 查找最后一个 @ 符号的索引位置
-    const lastAtIndex = textBeforeCursor.lastIndexOf("@");
+    const lastAtIndex = textBeforeCursor.lastIndexOf(triggerChar);
     // 更新最后一个 @ 符号的索引位置状态
     setCurrentAtIndex(lastAtIndex);
     if (lastAtIndex !== -1) {
@@ -127,7 +135,7 @@ const AtInput: React.FC<AtInputProps> = ({
       // 隐藏用户选择下拉框
       setDropdownVisible(false);
     }
-  }, [updateCursorPosition, fetchUserOptions]);
+  }, [updateCursorPosition, fetchUserOptions, triggerChar]);
 
   /**
    * 选中 @ 符号后的用户 span 元素
@@ -147,12 +155,13 @@ const AtInput: React.FC<AtInputProps> = ({
    * @param {React.MouseEvent<HTMLDivElement>} e - 鼠标点击事件
    */
   const handleEditorClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    // 处理输入框的观察逻辑
-    handleInputObservation();
     if (e.target instanceof HTMLSpanElement) {
       // 选中点击的 span 元素
       selectAtSpan(e.target);
+      return;
     }
+    // 处理输入框的观察逻辑
+    handleInputObservation();
   };
 
   /**
@@ -187,7 +196,7 @@ const AtInput: React.FC<AtInputProps> = ({
     // 设置不可编辑
     spanElement.contentEditable = "false";
     // 设置文本内容
-    spanElement.innerText = `@${name}`;
+    spanElement.innerText = `${triggerChar}${name}`;
     return spanElement;
   };
 
@@ -253,22 +262,76 @@ const AtInput: React.FC<AtInputProps> = ({
     onChange(content, filteredUsers);
   }, [selectedUsers, content, filterSelectedUsers, onChange]);
 
+  useEffect(() => {
+    if (!isDropdownVisible) {
+      setSelectedIndex(-1);
+    }
+  }, [isDropdownVisible]);
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (!isDropdownVisible) return;
+
+    switch (e.key) {
+      case "ArrowUp":
+        e.preventDefault();
+        setSelectedIndex((prev) => {
+          const newIndex = prev <= 0 ? userOptions.length - 1 : prev - 1;
+          return newIndex;
+        });
+        break;
+      case "ArrowDown":
+        e.preventDefault();
+        setSelectedIndex((prev) => {
+          const newIndex = prev >= userOptions.length - 1 ? 0 : prev + 1;
+          return newIndex;
+        });
+        break;
+      case "Enter":
+        e.preventDefault();
+        if (selectedIndex >= 0 && selectedIndex < userOptions.length) {
+          handleUserSelect(userOptions[selectedIndex]);
+          setSelectedIndex(-1);
+        }
+        break;
+      case "Escape":
+        e.preventDefault();
+        setDropdownVisible(false);
+        setSelectedIndex(-1);
+        break;
+    }
+  };
+
   return (
-    <div style={{ height, position: "relative" }}>
+    <div className="at-input-container">
       <div
         id="atInput"
         ref={editorRef}
-        className="editor"
+        className={`${className} at-input-editor`}
         contentEditable
+        style={{ ...style, height }}
         onInput={handleEditorChange}
         onClick={handleEditorClick}
+        onKeyDown={handleKeyDown}
       />
-      <SelectUser
-        options={userOptions}
-        visible={isDropdownVisible}
-        cursorPosition={cursorPosition}
-        onSelect={handleUserSelect}
-      />
+      {CustomSelectComponent ? (
+        <CustomSelectComponent
+          options={userOptions}
+          visible={isDropdownVisible}
+          cursorPosition={cursorPosition}
+          onSelect={handleUserSelect}
+          style={customSelectStyle}
+          renderOption={renderOption}
+          selectedIndex={selectedIndex}
+        />
+      ) : (
+        <SelectUser
+          options={userOptions}
+          visible={isDropdownVisible}
+          cursorPosition={cursorPosition}
+          onSelect={handleUserSelect}
+          selectedIndex={selectedIndex}
+        />
+      )}
     </div>
   );
 };

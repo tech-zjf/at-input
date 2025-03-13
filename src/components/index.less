@@ -1,52 +1,78 @@
-.editor {
-  box-sizing: border-box;
+.at-input-container {
+  position: relative;
   width: 100%;
-  height: 100%;
-  padding: 10px;
-  overflow-y: auto;
-  font-size: 16px;
-  white-space: break-spaces;
-  border: 1px solid #d9d9d9;
-  border-radius: 2px;
-  outline: none;
-  resize: none;
-  text-align: left;
-  .at-span {
-    color: blue;
-  }
-}
-
-.select-wrap {
-  z-index: 666;
-  width: 300px;
-  max-height: 300px;
-  overflow-y: auto;
-  background-color: #fff;
-  border: 1px solid #d9d9d9;
-  border-radius: 10px;
-  ul {
+  .at-input-editor {
     width: 100%;
-    margin: 0;
-    padding: 0;
-    list-style: none;
+    padding: 12px;
+    border: 1px solid #d9d9d9;
+    border-radius: 4px;
+    box-sizing: border-box;
+    outline: none;
+    resize: none;
+    font-size: 14px;
+    line-height: 1.5;
+    overflow-y: auto;
 
-    li {
-      display: flex;
-      align-items: center;
-      box-sizing: border-box;
-      width: 100%;
-      padding: 7px 5px;
-      border-bottom: 1px solid #d9d9d9;
+    .at-span {
+      margin: 0 2px;
+      padding: 1px 4px;
+      background-color: rgba(25, 100, 255, 0.1);
+      border-radius: 3px;
+      white-space: nowrap;
       cursor: pointer;
-      img {
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
+
+      &:hover {
+        background-color: rgba(25, 100, 255, 0.2);
       }
-      span {
-        flex: 1;
-        margin-left: 20px;
-        overflow: hidden;
+    }
+  }
+
+  .select-container {
+    position: absolute;
+    min-width: 200px;
+    max-width: 300px;
+    background: white;
+    border: 1px solid #d9d9d9;
+    border-radius: 4px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    z-index: 1000;
+
+    .loading-state,
+    .empty-state {
+      padding: 12px;
+      text-align: center;
+      color: #999;
+      font-size: 14px;
+    }
+
+    .options-list {
+      margin: 0;
+      padding: 4px 0;
+      list-style: none;
+
+      .option-item {
+        display: flex;
+        align-items: center;
+        padding: 8px 12px;
+        cursor: pointer;
+
+        &:hover,
+        &.selected {
+          background-color: #f5f5f5;
+        }
+
+        .avatar {
+          width: 24px;
+          height: 24px;
+          border-radius: 50%;
+          margin-right: 8px;
+        }
+
+        .name {
+          flex: 1;
+          font-size: 14px;
+          color: #333;
+        }
       }
     }
   }

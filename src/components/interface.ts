@@ -1,3 +1,5 @@
+import React from "react";
+
 /**
  * 自定义事件接口，用于模拟输入事件的目标属性
  */
@@ -58,6 +60,8 @@ export interface AtInputProps {
   renderOption?: (option: UserOption) => React.ReactNode;
   // 自定义筛选逻辑
   filterOption?: (input: string, option: UserOption) => boolean;
+  className?: string;
+  style?: React.CSSProperties;
 }
 
 /**
@@ -69,4 +73,12 @@ export interface SelectUserProps {
   cursorPosition: CursorPosition;
   // 用户选择时的回调函数，接收选中的用户选项
   onSelect: (user: UserOption) => void;
+  // 当前选中项的索引
+  selectedIndex?: number;
+  // 是否正在加载数据
+  loading?: boolean;
+  // 自定义样式
+  style?: React.CSSProperties;
+  // 自定义选项渲染函数
+  renderOption?: (option: UserOption) => React.ReactNode;
 }

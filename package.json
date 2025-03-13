@@ -1,15 +1,31 @@
 {
-  "name": "at-input",
-  "private": true,
-  "version": "0.0.0",
+  "name": "@tech-zjf/at-input",
+  "version": "1.0.0",
+  "description": "一个支持@提及功能的React输入组件",
   "type": "module",
+  "main": "dist/at-input.umd.js",
+  "module": "dist/at-input.es.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "keywords": [
+    "react",
+    "input",
+    "mention",
+    "at",
+    "component"
+  ],
+  "author": "",
+  "license": "MIT",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "prepublishOnly": "npm run build"
   },
-  "dependencies": {
+  "peerDependencies": {
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },
@@ -28,6 +44,16 @@
     "tailwindcss": "^3.4.1",
     "typescript": "^5.3.3",
     "typescript-eslint": "^6.19.1",
-    "vite": "^5.0.12"
-  }
+    "vite": "^5.0.12",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tech_zjf/at-input"
+  },
+  "bugs": {
+    "url": "https://github.com/tech_zjf/at-input/issues"
+  },
+  "homepage": "https://github.com/tech_zjf/at-input#readme"
 }
