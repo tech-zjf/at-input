@@ -7,6 +7,7 @@ function App() {
       className="min-h-screen bg-gray-100 p-8 w-full max-w-[600px] mx-auto"
       style={{ width: 600 }}
     >
+      <h4>@输入框</h4>
       <AtInput
         onRequest={async (key) => {
           const users = [
