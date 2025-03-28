@@ -13,6 +13,11 @@
     "isolatedModules": true,
     "moduleDetection": "force",
     "noEmit": true,
+    "emitDeclarationOnly": true,
+    "declaration": true,
+    "declarationDir": "./dist/types",
+    "composite": true,
+    "rootDir": "src",
     "jsx": "react-jsx",
 
     /* Linting */

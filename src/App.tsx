@@ -1,4 +1,4 @@
-import AtInput from "./components/index";
+import { AtInput } from "./components/index";
 import "./App.css";
 
 function App() {

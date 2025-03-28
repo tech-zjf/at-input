@@ -3,7 +3,6 @@ import SelectUser from "./select-user";
 import "./index.less";
 import { StringTools } from "../tools/index";
 import { AtInputProps, CursorPosition, UserOption } from "./interface";
-
 /**
  * AtInput 组件，支持 @ 功能的输入框
  * @param {AtInputProps} props - 组件属性
@@ -12,7 +11,7 @@ import { AtInputProps, CursorPosition, UserOption } from "./interface";
  * @param {(content: string, selectedUsers: UserOption[] | []) => void} props.onChange - 内容变化时的回调函数
  * @returns {JSX.Element} - 渲染的组件
  */
-const AtInput: React.FC<AtInputProps> = ({
+export const AtInput: React.FC<AtInputProps> = ({
   height = 300,
   onRequest,
   onChange,
@@ -49,7 +48,7 @@ const AtInput: React.FC<AtInputProps> = ({
   const editorRef = useRef<HTMLDivElement>(null);
 
   // 用于防抖的定时器
-  const debounceTimer = useRef<number | null>(null);
+  const debounceTimer = useRef<NodeJS.Timeout | null>(null);
 
   /**
    * 更新光标的位置
@@ -335,5 +334,3 @@ const AtInput: React.FC<AtInputProps> = ({
     </div>
   );
 };
-
-export default AtInput;
